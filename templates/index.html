@@ -737,7 +737,12 @@
           items
         })
       });
-      const data = await r.json();
+      // Handle non-JSON responses (Railway error pages, crashes)
+      const text = await r.text();
+      let data;
+      try { data = JSON.parse(text); }
+      catch { showToast(`Erreur serveur (${r.status}) : ${text.slice(0, 120)}`, 'error'); btn.disabled = false; btn.innerHTML = '📧 Envoyer la commande'; return; }
+
       if (data.success) {
         document.getElementById('success-msg').textContent =
           `La commande de ${selectedRestaurant} a été envoyée à ${currentSupplier.name} (${supplierEmail}).`;
@@ -748,7 +753,7 @@
         btn.innerHTML = '📧 Envoyer la commande';
       }
     } catch(e) {
-      showToast('Erreur réseau.', 'error');
+      showToast('Erreur réseau : ' + e.message, 'error');
       btn.disabled = false;
       btn.innerHTML = '📧 Envoyer la commande';
     }
