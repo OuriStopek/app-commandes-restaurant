@@ -346,6 +346,7 @@
     <div class="summary-date" id="summary-email-to" style="margin-top:4px;font-weight:500;color:var(--green-mid);"></div>
   </div>
   <div class="order-items" id="order-items"></div>
+  <div id="send-error-box" style="display:none;margin:0 16px 8px;padding:14px 16px;background:#FFE5E7;border-radius:10px;border-left:4px solid var(--danger);font-size:13px;color:#7B0000;line-height:1.5;word-break:break-word;"></div>
   <div class="email-preview-label">Aperçu de l'email</div>
   <div class="email-preview" id="email-preview"></div>
   <div class="bottom-bar">
@@ -709,6 +710,7 @@
 
     document.getElementById('send-btn').disabled = false;
     document.getElementById('send-btn').innerHTML = '📧 Envoyer la commande';
+    document.getElementById('send-error-box').style.display = 'none';
     showScreen('screen-summary');
   }
 
@@ -748,12 +750,12 @@
           `La commande de ${selectedRestaurant} a été envoyée à ${currentSupplier.name} (${supplierEmail}).`;
         showScreen('screen-success');
       } else {
-        showToast(data.error || "Erreur lors de l'envoi", 'error');
+        showSendError(data.error || "Erreur lors de l'envoi");
         btn.disabled = false;
         btn.innerHTML = '📧 Envoyer la commande';
       }
     } catch(e) {
-      showToast('Erreur réseau : ' + e.message, 'error');
+      showSendError('Erreur réseau : ' + e.message);
       btn.disabled = false;
       btn.innerHTML = '📧 Envoyer la commande';
     }
@@ -1044,6 +1046,13 @@
   }
 
   // ── Toast ────────────────────────────────────────────────────────────────────
+  function showSendError(msg) {
+    const box = document.getElementById('send-error-box');
+    box.textContent = '⚠ ' + msg;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   function showToast(msg, type = '') {
     const t = document.getElementById('toast');
     t.textContent = msg;
