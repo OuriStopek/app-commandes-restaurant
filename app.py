@@ -317,10 +317,7 @@ def send_order():
         msg['Subject'] = f"Commande {restaurant_name} – {date_str}"
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-        with smtplib.SMTP(config.get('smtp_host', 'smtp.gmail.com'),
-                          int(config.get('smtp_port', 587))) as server:
-            server.ehlo()
-            server.starttls()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
             server.login(sender, password)
             server.send_message(msg)
 
