@@ -10,7 +10,6 @@
       --green-mid: #2D6A4F;
       --green-light: #52B788;
       --green-pale: #D8F3DC;
-      --accent: #F4A261;
       --danger: #E63946;
       --bg: #F8F9FA;
       --card: #FFFFFF;
@@ -21,9 +20,7 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
@@ -63,34 +60,55 @@
       background: rgba(255,255,255,0.15);
       border: none;
       color: white;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       transition: background 0.2s;
+      white-space: nowrap;
     }
     .header-action:hover { background: rgba(255,255,255,0.25); }
 
     /* ── Screens ── */
     .screen { display: none; animation: fadeIn 0.2s ease; }
     .screen.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+    /* ── Page content ── */
+    .page-content { padding: 20px; max-width: 800px; margin: 0 auto; }
+
+    /* ── Restaurant Selection ── */
+    .restaurant-choice-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 24px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .restaurant-choice-btn:hover { border-color: var(--green-light); background: var(--green-pale); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .restaurant-choice-btn:active { transform: scale(0.97); }
+    .r-icon { font-size: 28px; }
 
     /* ── Supplier Grid ── */
-    .page-content { padding: 20px; max-width: 800px; margin: 0 auto; }
-    .welcome-text { color: var(--text-soft); font-size: 14px; margin-bottom: 20px; }
-    .welcome-text strong { color: var(--text); }
-
     .supplier-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
       gap: 14px;
     }
     .supplier-card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 20px 16px;
+      padding: 18px 14px;
       cursor: pointer;
       box-shadow: var(--shadow);
       transition: transform 0.15s, box-shadow 0.15s;
@@ -107,384 +125,187 @@
       height: 4px;
       background: var(--card-color, var(--green-light));
     }
-    .supplier-card .s-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      margin-bottom: 12px;
-      background: var(--card-bg, var(--green-pale));
-    }
-    .supplier-card .s-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .supplier-card .s-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px; background: var(--card-bg, var(--green-pale)); }
+    .supplier-card .s-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
     .supplier-card .s-count { font-size: 12px; color: var(--text-soft); }
-    .supplier-card .s-email-badge {
-      display: inline-block;
-      font-size: 10px;
-      background: var(--green-pale);
-      color: var(--green-mid);
-      border-radius: 10px;
-      padding: 2px 8px;
-      margin-top: 6px;
-      font-weight: 500;
-    }
-    .supplier-card .s-email-badge.missing {
-      background: #FEF3C7;
-      color: #92400E;
-    }
+    .supplier-card .s-email-badge { display: inline-block; font-size: 10px; background: var(--green-pale); color: var(--green-mid); border-radius: 10px; padding: 2px 8px; margin-top: 6px; font-weight: 500; }
+    .supplier-card .s-email-badge.missing { background: #FEF3C7; color: #92400E; }
 
-    /* ── Product Screen ── */
-    .search-bar {
-      padding: 14px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 70px;
-      z-index: 90;
-    }
-    .search-input {
-      width: 100%;
-      padding: 10px 16px 10px 40px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 12px center;
-    }
+    /* ── Search bar ── */
+    .search-bar { padding: 14px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 70px; z-index: 90; }
+    .search-input { width: 100%; padding: 10px 16px 10px 40px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; transition: border-color 0.2s; background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 12px center; }
     .search-input:focus { border-color: var(--green-light); }
 
+    /* ── Products ── */
     .products-container { padding: 16px; max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
-
     .family-group { margin-bottom: 16px; }
-    .family-header {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-soft);
-      padding: 8px 4px 8px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 8px;
-    }
+    .family-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-soft); padding: 8px 4px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 
-    .product-item {
-      background: var(--card);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      border: 2px solid transparent;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      overflow: hidden;
-    }
-    .product-item.checked {
-      border-color: var(--green-light);
-      box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
-    }
-    .product-main {
-      display: flex;
-      align-items: center;
-      padding: 14px;
-      cursor: pointer;
-      gap: 12px;
-    }
-    .product-checkbox {
-      width: 22px; height: 22px;
-      border-radius: 6px;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.15s;
-      background: white;
-    }
-    .product-item.checked .product-checkbox {
-      background: var(--green-mid);
-      border-color: var(--green-mid);
-    }
+    .product-item { background: var(--card); border-radius: 10px; margin-bottom: 8px; border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s; overflow: hidden; }
+    .product-item.checked { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(82,183,136,0.15); }
+    .product-main { display: flex; align-items: center; padding: 14px; cursor: pointer; gap: 12px; }
+    .product-checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; background: white; }
+    .product-item.checked .product-checkbox { background: var(--green-mid); border-color: var(--green-mid); }
     .product-checkbox svg { display: none; }
     .product-item.checked .product-checkbox svg { display: block; }
-
     .product-info { flex: 1; min-width: 0; }
     .product-name { font-size: 14px; font-weight: 500; line-height: 1.3; }
     .product-meta { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
     .product-price { font-size: 13px; font-weight: 600; color: var(--green-mid); flex-shrink: 0; }
-
-    .product-qty {
-      display: none;
-      padding: 0 14px 14px;
-      align-items: center;
-      gap: 10px;
-    }
+    .product-qty { display: none; padding: 0 14px 14px; align-items: center; gap: 10px; }
     .product-item.checked .product-qty { display: flex; }
     .qty-label { font-size: 13px; color: var(--text-soft); white-space: nowrap; }
     .qty-controls { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-    .qty-btn {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      border: none;
-      background: var(--green-pale);
-      color: var(--green);
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
+    .qty-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--green-pale); color: var(--green); font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
     .qty-btn:hover { background: var(--green-light); color: white; }
-    .qty-input {
-      width: 70px;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 600;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 6px;
-      outline: none;
-    }
+    .qty-input { width: 70px; text-align: center; font-size: 16px; font-weight: 600; border: 2px solid var(--border); border-radius: 8px; padding: 6px; outline: none; }
     .qty-input:focus { border-color: var(--green-light); }
     .qty-unit { font-size: 12px; color: var(--text-soft); min-width: 30px; }
 
-    /* ── Bottom Bar ── */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      padding: 12px 20px;
-      background: white;
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-      z-index: 100;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .bottom-count {
-      font-size: 14px;
-      color: var(--text-soft);
-      flex: 1;
-    }
+    /* ── Bottom bar ── */
+    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px; background: white; border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 100; display: flex; gap: 10px; align-items: center; }
+    .bottom-count { font-size: 14px; color: var(--text-soft); flex: 1; }
     .bottom-count strong { color: var(--text); }
 
-    .btn {
-      padding: 14px 24px;
-      border-radius: 12px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .btn-primary {
-      background: var(--green);
-      color: white;
-    }
+    /* ── Buttons ── */
+    .btn { padding: 14px 20px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+    .btn-primary { background: var(--green); color: white; }
     .btn-primary:hover { background: var(--green-mid); }
     .btn-primary:active { transform: scale(0.97); }
     .btn-primary:disabled { background: var(--border); color: var(--text-soft); cursor: not-allowed; }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-outline {
-      background: white;
-      color: var(--green);
-      border: 2px solid var(--green);
-    }
+    .btn-outline { background: white; color: var(--green); border: 2px solid var(--green); }
+    .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 8px; }
 
-    /* ── Summary Screen ── */
-    .summary-header {
-      background: var(--green-pale);
-      padding: 20px;
-      margin-bottom: 0;
-    }
+    /* ── Summary ── */
+    .summary-header { background: var(--green-pale); padding: 20px; }
     .summary-supplier { font-size: 22px; font-weight: 700; color: var(--green); }
     .summary-date { font-size: 14px; color: var(--text-soft); margin-top: 4px; }
-
     .order-items { padding: 0 16px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
-    .order-item {
-      display: flex;
-      align-items: flex-start;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
-    }
-    .order-item-bullet {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green-light);
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
+    .order-item { display: flex; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .order-item-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--green-light); margin-top: 6px; flex-shrink: 0; }
     .order-item-name { flex: 1; font-size: 15px; font-weight: 500; }
     .order-item-ref { font-size: 11px; color: var(--text-soft); }
-    .order-item-qty {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--green);
-      white-space: nowrap;
-    }
-    .order-item-edit {
-      background: none;
-      border: none;
-      color: var(--text-soft);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 0 4px;
-      transition: color 0.15s;
-    }
-    .order-item-edit:hover { color: var(--danger); }
+    .order-item-qty { font-size: 15px; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .email-preview-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-soft); margin: 20px 16px 8px; }
+    .email-preview { margin: 0 16px 20px; background: #F0F4F8; border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.7; font-family: 'Courier New', monospace; white-space: pre-wrap; border-left: 4px solid var(--green-light); max-width: 768px; }
 
-    .email-preview {
-      margin: 16px;
-      background: #F0F4F8;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--text);
-      font-family: 'Courier New', monospace;
-      white-space: pre-wrap;
-      border-left: 4px solid var(--green-light);
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .email-preview-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-soft);
-      margin: 20px 16px 8px;
-    }
-
-    /* ── Success Screen ── */
-    .success-content {
-      padding: 60px 20px;
-      text-align: center;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    .success-icon {
-      width: 80px; height: 80px;
-      background: var(--green-pale);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 24px;
-      font-size: 36px;
-    }
+    /* ── Success ── */
+    .success-content { padding: 60px 20px; text-align: center; max-width: 500px; margin: 0 auto; }
+    .success-icon { width: 80px; height: 80px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 36px; }
     .success-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--green); }
     .success-sub { color: var(--text-soft); font-size: 15px; line-height: 1.5; }
     .success-actions { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; }
 
-    /* ── Settings Screen ── */
+    /* ── Settings ── */
     .settings-content { padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
     .settings-section { margin-bottom: 28px; }
-    .settings-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-soft);
-      margin-bottom: 12px;
-    }
+    .settings-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-soft); margin-bottom: 12px; }
     .settings-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .settings-row {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .settings-row { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
     .settings-row:last-child { border-bottom: none; }
     .settings-label { font-size: 13px; font-weight: 600; }
-    .settings-input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    .settings-input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
     .settings-input:focus { border-color: var(--green-light); }
     .settings-hint { font-size: 11px; color: var(--text-soft); }
-
-    .save-btn {
-      width: 100%;
-      padding: 16px;
-      background: var(--green);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-      margin-top: 20px;
-    }
+    .save-btn { width: 100%; padding: 16px; background: var(--green); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.15s; margin-top: 8px; }
     .save-btn:hover { background: var(--green-mid); }
 
+    /* ── Manage suppliers ── */
+    .manage-list { padding: 16px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+    .manage-item { background: var(--card); border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; padding: 16px; gap: 12px; box-shadow: var(--shadow); }
+    .manage-item-info { flex: 1; }
+    .manage-item-name { font-weight: 700; font-size: 15px; }
+    .manage-item-count { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+    .manage-item-actions { display: flex; gap: 8px; }
+    .icon-btn { background: var(--bg); border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .icon-btn:hover { background: var(--border); }
+    .icon-btn.danger:hover { background: #FFE5E7; }
+    .fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: white; border: none; font-size: 26px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: all 0.15s; z-index: 200; }
+    .fab:hover { transform: scale(1.08); background: var(--green-mid); }
+
+    /* ── Edit supplier screen ── */
+    .edit-supplier-content { padding: 16px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+    .field-group { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+    .field-row { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .field-row:last-child { border-bottom: none; }
+    .field-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft); }
+    .field-input { padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; width: 100%; }
+    .field-input:focus { border-color: var(--green-light); }
+
+    .product-edit-row { background: var(--card); border-radius: 10px; margin-bottom: 8px; padding: 14px; box-shadow: var(--shadow); }
+    .product-edit-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .product-edit-name { flex: 1; font-size: 15px; font-weight: 600; padding: 8px 10px; border: 2px solid var(--border); border-radius: 8px; outline: none; }
+    .product-edit-name:focus { border-color: var(--green-light); }
+    .product-edit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .product-edit-grid input { padding: 8px 10px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; width: 100%; }
+    .product-edit-grid input:focus { border-color: var(--green-light); }
+    .product-edit-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft); margin-bottom: 4px; }
+    .add-product-btn { width: 100%; padding: 14px; border: 2px dashed var(--border); background: none; border-radius: 10px; font-size: 14px; color: var(--text-soft); cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+    .add-product-btn:hover { border-color: var(--green-light); color: var(--green); background: var(--green-pale); }
+
+    /* ── Modal ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; box-shadow: var(--shadow-lg); }
+    .modal h3 { font-size: 18px; margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
     /* ── Toast ── */
-    .toast {
-      position: fixed;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: var(--text);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      z-index: 1000;
-      opacity: 0;
-      transition: all 0.3s;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--text); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; z-index: 1000; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.error { background: var(--danger); }
     .toast.success { background: var(--green-mid); }
 
     /* ── Loading ── */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px;
-      color: var(--text-soft);
-      flex-direction: column;
-      gap: 12px;
-    }
-    .spinner {
-      width: 32px; height: 32px;
-      border: 3px solid var(--border);
-      border-top-color: var(--green-light);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--text-soft); flex-direction: column; gap: 12px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green-light); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .empty { padding: 40px; text-align: center; color: var(--text-soft); }
 
     @media (max-width: 500px) {
       .supplier-grid { grid-template-columns: repeat(2, 1fr); }
-      .btn { padding: 14px 16px; font-size: 14px; }
+      .product-edit-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
 <!-- ══════════════════════════════════════
-     SCREEN 1 – Supplier Selection
+     SCREEN 0 – Restaurant Selection
 ══════════════════════════════════════ -->
-<div id="screen-home" class="screen active">
+<div id="screen-restaurant" class="screen active">
   <div class="header">
-    <div class="header-title" id="restaurant-name-header">Commandes</div>
+    <div class="header-title">Commandes Fournisseurs</div>
     <button class="header-action" onclick="showSettings()">⚙ Paramètres</button>
   </div>
+  <div class="page-content" style="padding-top:40px;">
+    <p style="font-size:16px;color:var(--text-soft);margin-bottom:28px;">Quel restaurant passe la commande ?</p>
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:400px;">
+      <button class="restaurant-choice-btn" onclick="selectRestaurant('Beaucour')">
+        <span class="r-icon">🏠</span> Beaucour
+      </button>
+      <button class="restaurant-choice-btn" onclick="selectRestaurant('Chouchou')">
+        <span class="r-icon">🌸</span> Chouchou
+      </button>
+      <button class="restaurant-choice-btn" onclick="selectRestaurant('Bowler')">
+        <span class="r-icon">🎳</span> Bowler
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 – Supplier Selection
+══════════════════════════════════════ -->
+<div id="screen-home" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('screen-restaurant')">←</button>
+    <div class="header-title" id="restaurant-name-header">Commandes</div>
+    <button class="header-action" onclick="openManage()">✏ Gérer</button>
+  </div>
   <div class="page-content">
-    <p class="welcome-text">Sélectionnez un <strong>fournisseur</strong> pour passer une commande.</p>
+    <p style="color:var(--text-soft);font-size:14px;margin-bottom:20px;">Sélectionnez un <strong>fournisseur</strong> pour passer une commande.</p>
     <div id="supplier-grid" class="supplier-grid">
       <div class="loading"><div class="spinner"></div><span>Chargement...</span></div>
     </div>
@@ -496,7 +317,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-products" class="screen">
   <div class="header">
-    <button class="header-back" onclick="goHome()">←</button>
+    <button class="header-back" onclick="showScreen('screen-home')">←</button>
     <div class="header-title" id="supplier-title">Fournisseur</div>
   </div>
   <div class="search-bar">
@@ -507,9 +328,7 @@
   </div>
   <div class="bottom-bar">
     <div class="bottom-count" id="selection-count">Aucun produit sélectionné</div>
-    <button class="btn btn-primary" id="validate-btn" onclick="showSummary()" disabled>
-      Valider la commande →
-    </button>
+    <button class="btn btn-primary" id="validate-btn" onclick="showSummary()" disabled>Valider →</button>
   </div>
 </div>
 
@@ -518,7 +337,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-summary" class="screen">
   <div class="header">
-    <button class="header-back" onclick="showProducts()">←</button>
+    <button class="header-back" onclick="showScreen('screen-products')">←</button>
     <div class="header-title">Récapitulatif</div>
   </div>
   <div class="summary-header">
@@ -530,10 +349,8 @@
   <div class="email-preview-label">Aperçu de l'email</div>
   <div class="email-preview" id="email-preview"></div>
   <div class="bottom-bar">
-    <button class="btn btn-outline" onclick="showProducts()" style="flex:1;">← Modifier</button>
-    <button class="btn btn-primary" id="send-btn" onclick="sendOrder()" style="flex:2;">
-      📧 Envoyer la commande
-    </button>
+    <button class="btn btn-outline" onclick="showScreen('screen-products')" style="flex:1;">← Modifier</button>
+    <button class="btn btn-primary" id="send-btn" onclick="sendOrder()" style="flex:2;">📧 Envoyer</button>
   </div>
 </div>
 
@@ -549,9 +366,7 @@
     <div class="success-title">Email envoyé !</div>
     <div class="success-sub" id="success-msg"></div>
     <div class="success-actions">
-      <button class="btn btn-primary" onclick="goHome()" style="justify-content:center;">
-        Nouvelle commande
-      </button>
+      <button class="btn btn-primary" onclick="goHome()" style="justify-content:center;">Nouvelle commande</button>
     </div>
   </div>
 </div>
@@ -566,17 +381,7 @@
   </div>
   <div class="settings-content">
     <div class="settings-section">
-      <div class="settings-title">Restaurant</div>
-      <div class="settings-card">
-        <div class="settings-row">
-          <div class="settings-label">Nom du restaurant</div>
-          <input type="text" class="settings-input" id="cfg-restaurant" placeholder="Le Restaurant" />
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <div class="settings-title">Email expéditeur (Gmail recommandé)</div>
+      <div class="settings-title">Email expéditeur (Gmail)</div>
       <div class="settings-card">
         <div class="settings-row">
           <div class="settings-label">Adresse email</div>
@@ -585,34 +390,79 @@
         <div class="settings-row">
           <div class="settings-label">Mot de passe d'application</div>
           <input type="password" class="settings-input" id="cfg-password" placeholder="Laisser vide pour ne pas modifier" />
-          <div class="settings-hint">
-            Gmail → Mon compte → Sécurité → Mots de passe d'applications → Créer
-          </div>
+          <div class="settings-hint">Gmail → Mon compte → Sécurité → Mots de passe d'applications</div>
         </div>
       </div>
     </div>
-
     <div class="settings-section">
       <div class="settings-title">Emails des fournisseurs</div>
       <div class="settings-card" id="supplier-emails-form"></div>
     </div>
-
     <button class="save-btn" onclick="saveSettings()">💾 Enregistrer</button>
   </div>
 </div>
 
-<!-- Toast notification -->
+<!-- ══════════════════════════════════════
+     SCREEN 6 – Manage Suppliers
+══════════════════════════════════════ -->
+<div id="screen-manage" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('screen-home')">←</button>
+    <div class="header-title">Gérer les fournisseurs</div>
+  </div>
+  <div class="manage-list" id="manage-list">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <button class="fab" onclick="openNewSupplierModal()" title="Nouveau fournisseur">+</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 7 – Edit Supplier
+══════════════════════════════════════ -->
+<div id="screen-edit-supplier" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('screen-manage')">←</button>
+    <div class="header-title" id="edit-supplier-title">Modifier</div>
+    <button class="header-action" id="edit-save-btn" onclick="saveSupplierEdits()">💾 Enregistrer</button>
+  </div>
+  <div class="edit-supplier-content" id="edit-supplier-content"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL – New Supplier
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-new-supplier">
+  <div class="modal">
+    <h3>Nouveau fournisseur</h3>
+    <div class="field-group">
+      <div class="field-row">
+        <div class="field-label">Nom du fournisseur *</div>
+        <input type="text" class="field-input" id="new-supplier-name" placeholder="Ex : Mon Fournisseur" />
+      </div>
+      <div class="field-row">
+        <div class="field-label">Email</div>
+        <input type="email" class="field-input" id="new-supplier-email" placeholder="contact@fournisseur.fr" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" style="flex:1;justify-content:center;" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="createSupplier()">Créer</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
-  // ── State ──
-  let allSuppliers = [];
+  // ── State ──────────────────────────────────────────────────────────────────
+  let allSuppliers    = [];
   let currentSupplier = null;
-  let allProducts = [];
-  let selectedItems = {}; // { productIndex: quantity }
-  let config = {};
+  let allProducts     = [];
+  let selectedItems   = {};
+  let selectedRestaurant = '';
+  let config          = {};
+  let editSupplierData = null; // { id, name, email, products }
 
-  // ── Supplier icons / colors by category ──
   const SUPPLIER_THEME = {
     'pinel':       { icon: '🥩', color: '#E63946', bg: '#FFE5E7' },
     'SG 2':        { icon: '🐄', color: '#C1440E', bg: '#FFE8D6' },
@@ -627,7 +477,7 @@
     'Kaviari':     { icon: '🫧', color: '#6C5CE7', bg: '#EDE7FF' },
   };
 
-  // ── Init ──
+  // ── Init ────────────────────────────────────────────────────────────────────
   async function init() {
     await loadConfig();
     await loadSuppliers();
@@ -637,34 +487,38 @@
     try {
       const r = await fetch('/api/config');
       config = await r.json();
-      const name = config.restaurant_name || 'Commandes';
-      document.getElementById('restaurant-name-header').textContent = name;
-      document.getElementById('cfg-restaurant').value = config.restaurant_name || '';
-      document.getElementById('cfg-email').value = config.email_sender || '';
+      document.getElementById('cfg-email').value    = config.email_sender || '';
     } catch(e) {}
   }
 
   async function loadSuppliers() {
-    const grid = document.getElementById('supplier-grid');
     try {
       const r = await fetch('/api/suppliers');
       allSuppliers = await r.json();
       renderSupplierGrid();
     } catch(e) {
-      grid.innerHTML = '<div class="empty">Erreur de chargement</div>';
+      document.getElementById('supplier-grid').innerHTML = '<div class="empty">Erreur de chargement</div>';
     }
   }
 
+  // ── Restaurant selection ────────────────────────────────────────────────────
+  function selectRestaurant(name) {
+    selectedRestaurant = name;
+    document.getElementById('restaurant-name-header').textContent = name;
+    showScreen('screen-home');
+  }
+
+  // ── Supplier grid ───────────────────────────────────────────────────────────
   function renderSupplierGrid() {
     const grid = document.getElementById('supplier-grid');
     grid.innerHTML = '';
     allSuppliers.forEach(s => {
-      const theme = SUPPLIER_THEME[s.id] || { icon: '📦', color: '#6B7280', bg: '#F3F4F6' };
+      const theme    = SUPPLIER_THEME[s.id] || { icon: '📦', color: '#6B7280', bg: '#F3F4F6' };
       const hasEmail = s.email && s.email.trim();
-      const card = document.createElement('div');
+      const card     = document.createElement('div');
       card.className = 'supplier-card';
       card.style.setProperty('--card-color', theme.color);
-      card.style.setProperty('--card-bg', theme.bg);
+      card.style.setProperty('--card-bg',    theme.bg);
       card.innerHTML = `
         <div class="s-icon">${theme.icon}</div>
         <div class="s-name">${s.name}</div>
@@ -678,7 +532,7 @@
     });
   }
 
-  // ── Open Supplier ──
+  // ── Open supplier ───────────────────────────────────────────────────────────
   async function openSupplier(supplierId) {
     showScreen('screen-products');
     document.getElementById('supplier-title').textContent = '…';
@@ -686,7 +540,6 @@
       '<div class="loading"><div class="spinner"></div><span>Chargement...</span></div>';
     selectedItems = {};
     updateBottomBar();
-
     try {
       const r = await fetch(`/api/suppliers/${encodeURIComponent(supplierId)}`);
       currentSupplier = await r.json();
@@ -699,46 +552,35 @@
     }
   }
 
-  // ── Render Products ──
+  // ── Render products ─────────────────────────────────────────────────────────
   function renderProducts(products) {
     const container = document.getElementById('products-container');
-    if (!products.length) {
-      container.innerHTML = '<div class="empty">Aucun produit trouvé</div>';
-      return;
-    }
+    if (!products.length) { container.innerHTML = '<div class="empty">Aucun produit trouvé</div>'; return; }
 
-    // Group by family
     const groups = {};
     products.forEach((p, idx) => {
       const key = p.family || '—';
       if (!groups[key]) groups[key] = [];
       groups[key].push({ ...p, _idx: idx });
     });
-
     const keys = Object.keys(groups).sort((a, b) => a === '—' ? 1 : b === '—' ? -1 : a.localeCompare(b));
     container.innerHTML = '';
-
     keys.forEach(family => {
       const group = document.createElement('div');
       group.className = 'family-group';
-      if (family !== '—') {
-        group.innerHTML = `<div class="family-header">${family}</div>`;
-      }
-      groups[family].forEach(p => {
-        group.appendChild(createProductEl(p, p._idx));
-      });
+      if (family !== '—') group.innerHTML = `<div class="family-header">${family}</div>`;
+      groups[family].forEach(p => group.appendChild(createProductEl(p, p._idx)));
       container.appendChild(group);
     });
   }
 
   function createProductEl(product, idx) {
     const isChecked = selectedItems[idx] !== undefined;
-    const qty = selectedItems[idx] || 1;
+    const qty  = selectedItems[idx] || 1;
     const unit = product.unit || '';
     const price = product.price ? `${product.price.toFixed(2)} €` : '';
-    const meta = [product.ref ? `Réf. ${product.ref}` : '', unit].filter(Boolean).join(' · ');
-
-    const el = document.createElement('div');
+    const meta  = [product.ref ? `Réf. ${product.ref}` : '', unit].filter(Boolean).join(' · ');
+    const el    = document.createElement('div');
     el.className = `product-item ${isChecked ? 'checked' : ''}`;
     el.dataset.idx = idx;
     el.innerHTML = `
@@ -757,11 +599,11 @@
       <div class="product-qty">
         <div class="qty-label">Quantité :</div>
         <div class="qty-controls">
-          <button class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+          <button class="qty-btn" onclick="changeQty(${idx},-1)">−</button>
           <input class="qty-input" type="number" min="0.5" step="0.5" value="${qty}"
-            onchange="setQty(${idx}, this.value)" onclick="event.stopPropagation()" />
+            onchange="setQty(${idx},this.value)" onclick="event.stopPropagation()" />
           <div class="qty-unit">${unit}</div>
-          <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
         </div>
       </div>
     `;
@@ -769,17 +611,12 @@
   }
 
   function toggleProduct(idx) {
-    if (selectedItems[idx] !== undefined) {
-      delete selectedItems[idx];
-    } else {
-      selectedItems[idx] = 1;
-    }
-    // Re-render just this item
+    if (selectedItems[idx] !== undefined) delete selectedItems[idx];
+    else selectedItems[idx] = 1;
     const el = document.querySelector(`.product-item[data-idx="${idx}"]`);
     if (!el) return;
-    const isChecked = selectedItems[idx] !== undefined;
-    el.classList.toggle('checked', isChecked);
-    if (isChecked) {
+    el.classList.toggle('checked', selectedItems[idx] !== undefined);
+    if (selectedItems[idx] !== undefined) {
       const input = el.querySelector('.qty-input');
       if (input) input.value = selectedItems[idx];
     }
@@ -788,86 +625,60 @@
 
   function changeQty(idx, delta) {
     event.stopPropagation();
-    const current = parseFloat(selectedItems[idx]) || 1;
-    const next = Math.max(0.5, Math.round((current + delta) * 2) / 2);
+    const next = Math.max(0.5, Math.round(((parseFloat(selectedItems[idx]) || 1) + delta) * 2) / 2);
     selectedItems[idx] = next;
-    const el = document.querySelector(`.product-item[data-idx="${idx}"]`);
-    if (el) {
-      const input = el.querySelector('.qty-input');
-      if (input) input.value = next;
-    }
+    const input = document.querySelector(`.product-item[data-idx="${idx}"] .qty-input`);
+    if (input) input.value = next;
     updateBottomBar();
   }
 
   function setQty(idx, val) {
     const num = parseFloat(val);
-    if (!isNaN(num) && num > 0) {
-      selectedItems[idx] = num;
-    }
+    if (!isNaN(num) && num > 0) selectedItems[idx] = num;
     updateBottomBar();
   }
 
   function updateBottomBar() {
     const count = Object.keys(selectedItems).length;
-    const countEl = document.getElementById('selection-count');
-    const btn = document.getElementById('validate-btn');
-    if (count === 0) {
-      countEl.innerHTML = 'Aucun produit sélectionné';
-    } else {
-      countEl.innerHTML = `<strong>${count}</strong> produit${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''}`;
-    }
-    btn.disabled = count === 0;
+    document.getElementById('selection-count').innerHTML = count === 0
+      ? 'Aucun produit sélectionné'
+      : `<strong>${count}</strong> produit${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''}`;
+    document.getElementById('validate-btn').disabled = count === 0;
   }
 
-  // ── Search ──
   function filterProducts() {
-    const query = document.getElementById('search-input').value.toLowerCase().trim();
-    if (!query) {
-      renderProducts(allProducts);
-      // Restore selection state
-      Object.keys(selectedItems).forEach(idx => {
-        const el = document.querySelector(`.product-item[data-idx="${idx}"]`);
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    const filtered = q
+      ? allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.ref && p.ref.toLowerCase().includes(q)) || (p.family && p.family.toLowerCase().includes(q)))
+      : allProducts;
+    renderProducts(filtered);
+    // Restore checked state
+    filtered.forEach((p, i) => {
+      const realIdx = allProducts.indexOf(p);
+      if (selectedItems[realIdx] !== undefined) {
+        const el = document.querySelectorAll('.product-item')[i];
         if (el) {
           el.classList.add('checked');
           const input = el.querySelector('.qty-input');
-          if (input) input.value = selectedItems[idx];
-        }
-      });
-      return;
-    }
-    const filtered = allProducts.map((p, idx) => ({ ...p, _idx: idx }))
-      .filter(p => p.name.toLowerCase().includes(query) ||
-                   (p.ref && p.ref.toLowerCase().includes(query)) ||
-                   (p.family && p.family.toLowerCase().includes(query)));
-    renderProducts(filtered.map(({ _idx, ...p }) => p));
-    // Re-apply selection
-    filtered.forEach(p => {
-      if (selectedItems[p._idx] !== undefined) {
-        const el = document.querySelector(`.product-item[data-idx="${p._idx}"]`);
-        if (el) {
-          el.classList.add('checked');
-          const input = el.querySelector('.qty-input');
-          if (input) input.value = selectedItems[p._idx];
+          if (input) input.value = selectedItems[realIdx];
         }
       }
     });
   }
 
-  // ── Summary ──
+  // ── Summary ─────────────────────────────────────────────────────────────────
   function showSummary() {
     const items = buildOrderItems();
     if (!items.length) return;
-
     const now = new Date();
     const date = now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-    const restaurant = config.restaurant_name || 'Le Restaurant';
+    const restaurant   = selectedRestaurant || 'Le Restaurant';
     const supplierEmail = currentSupplier.email || '⚠ Email non configuré';
 
     document.getElementById('summary-supplier-name').textContent = currentSupplier.name;
     document.getElementById('summary-date').textContent = date;
     document.getElementById('summary-email-to').textContent = `✉ ${supplierEmail}`;
 
-    // Order items list
     const container = document.getElementById('order-items');
     container.innerHTML = '';
     items.forEach(item => {
@@ -876,7 +687,7 @@
       const unitStr = item.unit ? ` ${item.unit}` : '';
       row.innerHTML = `
         <div class="order-item-bullet"></div>
-        <div class="order-item-info" style="flex:1;min-width:0;">
+        <div style="flex:1;min-width:0;">
           <div class="order-item-name">${item.name}</div>
           ${item.ref ? `<div class="order-item-ref">Réf. ${item.ref}</div>` : ''}
         </div>
@@ -885,75 +696,66 @@
       container.appendChild(row);
     });
 
-    // Email preview
     const lines = items.map(i => {
-      let line = `  - ${i.name}`;
-      if (i.ref) line += ` (réf. ${i.ref})`;
-      line += ` : ${i.quantity}`;
-      if (i.unit) line += ` ${i.unit}`;
-      return line;
+      let l = `  - ${i.name}`;
+      if (i.ref) l += ` (réf. ${i.ref})`;
+      l += ` : ${i.quantity}`;
+      if (i.unit) l += ` ${i.unit}`;
+      return l;
     }).join('\n');
-
     const dateShort = now.toLocaleDateString('fr-FR');
-    const body = `Bonjour ${currentSupplier.name},\n\nVoici la commande de ${restaurant} pour le ${dateShort} :\n\n${lines}\n\nCordialement,\n${restaurant}`;
-    document.getElementById('email-preview').textContent = body;
+    document.getElementById('email-preview').textContent =
+      `Bonjour ${currentSupplier.name},\n\nVoici la commande de ${restaurant} pour le ${dateShort} :\n\n${lines}\n\nCordialement,\n${restaurant}`;
 
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('send-btn').innerHTML = '📧 Envoyer la commande';
     showScreen('screen-summary');
   }
 
   function buildOrderItems() {
-    return Object.entries(selectedItems).map(([idx, qty]) => {
-      const p = allProducts[parseInt(idx)];
-      return { ...p, quantity: qty };
-    });
+    return Object.entries(selectedItems).map(([idx, qty]) => ({ ...allProducts[parseInt(idx)], quantity: qty }));
   }
 
-  // ── Send Order ──
+  // ── Send order ───────────────────────────────────────────────────────────────
   async function sendOrder() {
-    const btn = document.getElementById('send-btn');
+    const btn   = document.getElementById('send-btn');
     const items = buildOrderItems();
     const supplierEmail = currentSupplier.email;
-
-    if (!supplierEmail) {
-      showToast('Email du fournisseur non configuré. Allez dans Paramètres.', 'error');
-      return;
-    }
+    if (!supplierEmail) { showToast('Email du fournisseur non configuré.', 'error'); return; }
 
     btn.disabled = true;
     btn.textContent = '⏳ Envoi en cours…';
-
     try {
       const r = await fetch('/api/send-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          supplier_id: currentSupplier.id,
-          supplier_name: currentSupplier.name,
-          supplier_email: supplierEmail,
-          items: items
+          supplier_id:     currentSupplier.id,
+          supplier_name:   currentSupplier.name,
+          supplier_email:  supplierEmail,
+          restaurant_name: selectedRestaurant || config.restaurant_name || 'Le Restaurant',
+          items
         })
       });
       const data = await r.json();
       if (data.success) {
-        const restaurant = config.restaurant_name || 'Le Restaurant';
         document.getElementById('success-msg').textContent =
-          `La commande de ${restaurant} a été envoyée à ${currentSupplier.name} (${supplierEmail}).`;
+          `La commande de ${selectedRestaurant} a été envoyée à ${currentSupplier.name} (${supplierEmail}).`;
         showScreen('screen-success');
       } else {
-        showToast(data.error || 'Erreur lors de l\'envoi', 'error');
+        showToast(data.error || "Erreur lors de l'envoi", 'error');
         btn.disabled = false;
         btn.innerHTML = '📧 Envoyer la commande';
       }
     } catch(e) {
-      showToast('Erreur réseau. Vérifiez votre connexion.', 'error');
+      showToast('Erreur réseau.', 'error');
       btn.disabled = false;
       btn.innerHTML = '📧 Envoyer la commande';
     }
   }
 
-  // ── Settings ──
+  // ── Settings ─────────────────────────────────────────────────────────────────
   function showSettings() {
-    // Populate supplier emails form
     const form = document.getElementById('supplier-emails-form');
     form.innerHTML = '';
     allSuppliers.forEach(s => {
@@ -961,8 +763,7 @@
       row.className = 'settings-row';
       row.innerHTML = `
         <div class="settings-label">${s.name}</div>
-        <input type="email" class="settings-input" data-supplier="${s.id}"
-          value="${s.email || ''}" placeholder="email@fournisseur.fr" />
+        <input type="email" class="settings-input" data-supplier="${s.id}" value="${s.email || ''}" placeholder="email@fournisseur.fr" />
       `;
       form.appendChild(row);
     });
@@ -970,58 +771,274 @@
   }
 
   async function saveSettings() {
-    const restaurantName = document.getElementById('cfg-restaurant').value.trim();
-    const email = document.getElementById('cfg-email').value.trim();
+    const email    = document.getElementById('cfg-email').value.trim();
     const password = document.getElementById('cfg-password').value;
-
     const supplierEmails = {};
     document.querySelectorAll('[data-supplier]').forEach(input => {
       supplierEmails[input.dataset.supplier] = { email: input.value.trim() };
     });
-
-    const payload = {
-      restaurant_name: restaurantName,
-      email_sender: email,
-      smtp_host: 'smtp.gmail.com',
-      smtp_port: 587,
-      suppliers: supplierEmails
-    };
+    const payload = { email_sender: email, smtp_host: 'smtp.gmail.com', smtp_port: 587, suppliers: supplierEmails };
     if (password) payload.email_password = password;
-
     try {
-      const r = await fetch('/api/config', {
+      await fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      await loadConfig();
+      await loadSuppliers();
+      showToast('Paramètres enregistrés ✓', 'success');
+      setTimeout(goHome, 1200);
+    } catch(e) { showToast('Erreur lors de la sauvegarde', 'error'); }
+  }
+
+  // ── Manage suppliers ─────────────────────────────────────────────────────────
+  async function openManage() {
+    showScreen('screen-manage');
+    renderManageList();
+  }
+
+  function renderManageList() {
+    const list = document.getElementById('manage-list');
+    list.innerHTML = '';
+    if (!allSuppliers.length) { list.innerHTML = '<div class="empty">Aucun fournisseur</div>'; return; }
+    allSuppliers.forEach(s => {
+      const item = document.createElement('div');
+      item.className = 'manage-item';
+      item.innerHTML = `
+        <div class="manage-item-info">
+          <div class="manage-item-name">${s.name}</div>
+          <div class="manage-item-count">${s.product_count} produits · ${s.email || 'Email manquant'}</div>
+        </div>
+        <div class="manage-item-actions">
+          <button class="icon-btn" onclick="openEditSupplier('${s.id}')" title="Modifier">✏️</button>
+          <button class="icon-btn danger" onclick="confirmDeleteSupplier('${s.id}','${s.name}')" title="Supprimer">🗑</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  // ── New supplier modal ────────────────────────────────────────────────────────
+  function openNewSupplierModal() {
+    document.getElementById('new-supplier-name').value  = '';
+    document.getElementById('new-supplier-email').value = '';
+    document.getElementById('modal-new-supplier').classList.add('open');
+  }
+  function closeModal() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+
+  async function createSupplier() {
+    const name  = document.getElementById('new-supplier-name').value.trim();
+    const email = document.getElementById('new-supplier-email').value.trim();
+    if (!name) { showToast('Le nom est requis', 'error'); return; }
+    try {
+      const r = await fetch('/api/suppliers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ name, email })
       });
       const data = await r.json();
       if (data.success) {
-        await loadConfig();
+        closeModal();
         await loadSuppliers();
-        showToast('Paramètres enregistrés ✓', 'success');
-        setTimeout(goHome, 1200);
+        renderManageList();
+        showToast(`${name} créé ✓`, 'success');
+        openEditSupplier(data.id);
+      } else {
+        showToast(data.error || 'Erreur', 'error');
       }
-    } catch(e) {
-      showToast('Erreur lors de la sauvegarde', 'error');
-    }
+    } catch(e) { showToast('Erreur réseau', 'error'); }
   }
 
-  // ── Navigation ──
+  // ── Delete supplier ───────────────────────────────────────────────────────────
+  async function confirmDeleteSupplier(id, name) {
+    if (!confirm(`Supprimer le fournisseur "${name}" et tous ses produits ?`)) return;
+    try {
+      const r = await fetch(`/api/suppliers/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const data = await r.json();
+      if (data.success) {
+        await loadSuppliers();
+        renderManageList();
+        showToast(`${name} supprimé`, 'success');
+      } else {
+        showToast(data.error || 'Erreur', 'error');
+      }
+    } catch(e) { showToast('Erreur réseau', 'error'); }
+  }
+
+  // ── Edit supplier ─────────────────────────────────────────────────────────────
+  async function openEditSupplier(supplierId) {
+    showScreen('screen-edit-supplier');
+    document.getElementById('edit-supplier-title').textContent = '…';
+    document.getElementById('edit-supplier-content').innerHTML =
+      '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const r = await fetch(`/api/suppliers/${encodeURIComponent(supplierId)}`);
+      editSupplierData = await r.json();
+      document.getElementById('edit-supplier-title').textContent = editSupplierData.name;
+      renderEditSupplier();
+    } catch(e) { showToast('Erreur de chargement', 'error'); }
+  }
+
+  function renderEditSupplier() {
+    const s    = editSupplierData;
+    const wrap = document.getElementById('edit-supplier-content');
+    wrap.innerHTML = '';
+
+    // Supplier info
+    const info = document.createElement('div');
+    info.className = 'field-group';
+    info.innerHTML = `
+      <div class="field-row">
+        <div class="field-label">Nom du fournisseur</div>
+        <input type="text" class="field-input" id="es-name" value="${s.name}" />
+      </div>
+      <div class="field-row">
+        <div class="field-label">Email</div>
+        <input type="email" class="field-input" id="es-email" value="${s.email || ''}" placeholder="email@fournisseur.fr" />
+      </div>
+    `;
+    wrap.appendChild(info);
+
+    // Products section title
+    const productsTitle = document.createElement('div');
+    productsTitle.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin-bottom:12px;';
+    productsTitle.textContent = `Produits (${s.products.length})`;
+    wrap.appendChild(productsTitle);
+
+    // Products list
+    const productsList = document.createElement('div');
+    productsList.id = 'edit-products-list';
+    s.products.forEach((p, idx) => {
+      productsList.appendChild(createProductEditRow(p, idx));
+    });
+    wrap.appendChild(productsList);
+
+    // Add product button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-product-btn';
+    addBtn.textContent = '+ Ajouter un produit';
+    addBtn.onclick = addProductRow;
+    wrap.appendChild(addBtn);
+  }
+
+  function createProductEditRow(product, idx, isNew = false) {
+    const row = document.createElement('div');
+    row.className = 'product-edit-row';
+    row.dataset.idx = isNew ? 'new' : idx;
+    row.innerHTML = `
+      <div class="product-edit-name-row">
+        <input class="product-edit-name" type="text" placeholder="Nom du produit *"
+          value="${product.name || ''}" data-field="name" />
+        <button class="icon-btn danger" onclick="removeProductRow(this)" title="Supprimer">🗑</button>
+      </div>
+      <div class="product-edit-grid">
+        <div>
+          <div class="product-edit-label">Référence</div>
+          <input type="text" placeholder="Réf." value="${product.ref || ''}" data-field="ref" />
+        </div>
+        <div>
+          <div class="product-edit-label">Unité</div>
+          <input type="text" placeholder="kg, L, pc…" value="${product.unit || ''}" data-field="unit" />
+        </div>
+        <div>
+          <div class="product-edit-label">Prix HT (€)</div>
+          <input type="number" step="0.01" min="0" placeholder="0.00" value="${product.price ?? ''}" data-field="price" />
+        </div>
+      </div>
+    `;
+    return row;
+  }
+
+  function addProductRow() {
+    const list = document.getElementById('edit-products-list');
+    const newRow = createProductEditRow({ name:'', ref:'', unit:'', price:'' }, null, true);
+    newRow.dataset.idx = 'new';
+    list.appendChild(newRow);
+    newRow.querySelector('.product-edit-name').focus();
+  }
+
+  function removeProductRow(btn) {
+    const row = btn.closest('.product-edit-row');
+    const idx = row.dataset.idx;
+    if (idx === 'new') {
+      row.remove();
+      return;
+    }
+    // Mark for deletion
+    row.style.opacity = '0.4';
+    row.style.pointerEvents = 'none';
+    row.dataset.deleted = '1';
+  }
+
+  async function saveSupplierEdits() {
+    const s      = editSupplierData;
+    const name   = document.getElementById('es-name').value.trim();
+    const email  = document.getElementById('es-email').value.trim();
+
+    // 1. Update supplier meta
+    try {
+      await fetch(`/api/suppliers/${encodeURIComponent(s.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+    } catch(e) { showToast('Erreur réseau', 'error'); return; }
+
+    // 2. Process each product row
+    const rows = document.querySelectorAll('#edit-products-list .product-edit-row');
+    let deletedCount = 0;
+
+    for (const row of rows) {
+      const idx     = parseInt(row.dataset.idx);
+      const deleted = row.dataset.deleted === '1';
+      const productData = {
+        name:  row.querySelector('[data-field="name"]').value.trim(),
+        ref:   row.querySelector('[data-field="ref"]').value.trim(),
+        unit:  row.querySelector('[data-field="unit"]').value.trim(),
+        price: row.querySelector('[data-field="price"]').value,
+      };
+
+      if (row.dataset.idx === 'new') {
+        if (productData.name) {
+          await fetch(`/api/suppliers/${encodeURIComponent(s.id)}/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(productData)
+          });
+        }
+      } else if (deleted) {
+        const realIdx = idx - deletedCount;
+        await fetch(`/api/suppliers/${encodeURIComponent(s.id)}/products/${realIdx}`, { method: 'DELETE' });
+        deletedCount++;
+      } else {
+        await fetch(`/api/suppliers/${encodeURIComponent(s.id)}/products/${idx - deletedCount}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        });
+      }
+    }
+
+    await loadSuppliers();
+    renderManageList();
+    showToast('Fournisseur enregistré ✓', 'success');
+    showScreen('screen-manage');
+  }
+
+  // ── Navigation ───────────────────────────────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
   }
+
   function goHome() {
     selectedItems = {};
     currentSupplier = null;
-    showScreen('screen-home');
-  }
-  function showProducts() {
-    if (currentSupplier) showScreen('screen-products');
+    selectedRestaurant = '';
+    showScreen('screen-restaurant');
   }
 
-  // ── Toast ──
+  // ── Toast ────────────────────────────────────────────────────────────────────
   function showToast(msg, type = '') {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -1029,7 +1046,11 @@
     setTimeout(() => { t.className = 'toast'; }, 3000);
   }
 
-  // ── Start ──
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m =>
+    m.addEventListener('click', e => { if (e.target === m) closeModal(); })
+  );
+
   init();
 </script>
 </body>
