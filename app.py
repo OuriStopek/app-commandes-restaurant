@@ -9,36 +9,114 @@ import re
 
 app = Flask(__name__)
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), 'data.json')
+DATA_FILE   = os.path.join(os.path.dirname(__file__), 'data.json')
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), 'config.json')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
+
+# ── Database helpers (used on Railway) ────────────────────────────────────────
+
+def get_db():
+    import psycopg2
+    return psycopg2.connect(DATABASE_URL)
+
+
+def init_db():
+    """Create store table and seed initial data from files if empty."""
+    conn = get_db()
+    cur  = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS store (
+            key   TEXT PRIMARY KEY,
+            value JSONB NOT NULL
+        )
+    """)
+    # Seed data.json
+    cur.execute("SELECT 1 FROM store WHERE key = 'data'")
+    if not cur.fetchone():
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            cur.execute("INSERT INTO store (key, value) VALUES ('data', %s)", (f.read(),))
+    # Seed config
+    cur.execute("SELECT 1 FROM store WHERE key = 'config'")
+    if not cur.fetchone():
+        default = {"restaurant_name": "Le Restaurant", "email_sender": "",
+                   "email_password": "", "smtp_host": "smtp.gmail.com",
+                   "smtp_port": 587, "suppliers": {}}
+        cur.execute("INSERT INTO store (key, value) VALUES ('config', %s)",
+                    (json.dumps(default),))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def db_load(key):
+    conn = get_db()
+    cur  = conn.cursor()
+    cur.execute("SELECT value FROM store WHERE key = %s", (key,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return row[0] if row else None
+
+
+def db_save(key, value):
+    conn = get_db()
+    cur  = conn.cursor()
+    cur.execute("""
+        INSERT INTO store (key, value) VALUES (%s, %s)
+        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    """, (key, json.dumps(value)))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+# ── Data & config I/O (file locally, DB on Railway) ──────────────────────────
 
 def load_data():
+    if DATABASE_URL:
+        return db_load('data')
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 
 def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    if DATABASE_URL:
+        db_save('data', data)
+    else:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def load_config():
+    if DATABASE_URL:
+        cfg = db_load('config')
+        return cfg if cfg else {}
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    default = {"restaurant_name": "Le Restaurant", "email_sender": "", "email_password": "",
-                "smtp_host": "smtp.gmail.com", "smtp_port": 587, "suppliers": {}}
+    default = {"restaurant_name": "Le Restaurant", "email_sender": "",
+               "email_password": "", "smtp_host": "smtp.gmail.com",
+               "smtp_port": 587, "suppliers": {}}
     save_config(default)
     return default
 
 
 def save_config(config):
-    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-        json.dump(config, f, ensure_ascii=False, indent=2)
+    if DATABASE_URL:
+        db_save('config', config)
+    else:
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
 
 
-# ── Pages ──────────────────────────────────────────────────────────────────────
+# ── Init DB on startup ────────────────────────────────────────────────────────
+if DATABASE_URL:
+    with app.app_context():
+        init_db()
+
+
+# ── Pages ─────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -49,15 +127,15 @@ def index():
 
 @app.route('/api/suppliers')
 def get_suppliers():
-    data = load_data()
+    data   = load_data()
     config = load_config()
     result = []
     for key, supplier in data.items():
         supplier_config = config.get('suppliers', {}).get(key, {})
         result.append({
-            'id': key,
-            'name': supplier['name'],
-            'email': supplier_config.get('email', ''),
+            'id':            key,
+            'name':          supplier['name'],
+            'email':         supplier_config.get('email', ''),
             'product_count': len(supplier['products'])
         })
     return jsonify(result)
@@ -65,16 +143,16 @@ def get_suppliers():
 
 @app.route('/api/suppliers/<supplier_id>')
 def get_supplier(supplier_id):
-    data = load_data()
+    data   = load_data()
     config = load_config()
     if supplier_id not in data:
         return jsonify({'error': 'Fournisseur introuvable'}), 404
-    supplier = data[supplier_id]
+    supplier        = data[supplier_id]
     supplier_config = config.get('suppliers', {}).get(supplier_id, {})
     return jsonify({
-        'id': supplier_id,
-        'name': supplier['name'],
-        'email': supplier_config.get('email', ''),
+        'id':       supplier_id,
+        'name':     supplier['name'],
+        'email':    supplier_config.get('email', ''),
         'products': supplier['products']
     })
 
@@ -83,13 +161,12 @@ def get_supplier(supplier_id):
 
 @app.route('/api/suppliers', methods=['POST'])
 def create_supplier():
-    body = request.json
-    name = body.get('name', '').strip()
+    body  = request.json
+    name  = body.get('name', '').strip()
     email = body.get('email', '').strip()
     if not name:
         return jsonify({'success': False, 'error': 'Nom requis'}), 400
 
-    # Generate a slug key
     slug = re.sub(r'[^a-z0-9]', '_', name.lower()).strip('_')
     data = load_data()
     if slug in data:
@@ -98,7 +175,6 @@ def create_supplier():
     data[slug] = {'name': name, 'email': email, 'products': []}
     save_data(data)
 
-    # Also save email in config
     config = load_config()
     config.setdefault('suppliers', {})[slug] = {'email': email}
     save_config(config)
@@ -106,7 +182,7 @@ def create_supplier():
     return jsonify({'success': True, 'id': slug})
 
 
-# ── Update supplier name / email ───────────────────────────────────────────────
+# ── Update supplier ────────────────────────────────────────────────────────────
 
 @app.route('/api/suppliers/<supplier_id>', methods=['PUT'])
 def update_supplier(supplier_id):
@@ -139,7 +215,7 @@ def delete_supplier(supplier_id):
     return jsonify({'success': True})
 
 
-# ── Add product ────────────────────────────────────────────────────────────────
+# ── Products ──────────────────────────────────────────────────────────────────
 
 @app.route('/api/suppliers/<supplier_id>/products', methods=['POST'])
 def add_product(supplier_id):
@@ -149,10 +225,10 @@ def add_product(supplier_id):
         return jsonify({'success': False, 'error': 'Fournisseur introuvable'}), 404
 
     product = {
-        'name': body.get('name', '').strip(),
-        'ref': body.get('ref', '').strip() or None,
-        'unit': body.get('unit', '').strip() or None,
-        'price': float(body['price']) if body.get('price') not in (None, '') else None,
+        'name':   body.get('name', '').strip(),
+        'ref':    body.get('ref', '').strip() or None,
+        'unit':   body.get('unit', '').strip() or None,
+        'price':  float(body['price']) if body.get('price') not in (None, '') else None,
         'family': body.get('family', '').strip() or None,
     }
     if not product['name']:
@@ -160,16 +236,13 @@ def add_product(supplier_id):
 
     data[supplier_id]['products'].append(product)
     save_data(data)
-    idx = len(data[supplier_id]['products']) - 1
-    return jsonify({'success': True, 'idx': idx})
+    return jsonify({'success': True, 'idx': len(data[supplier_id]['products']) - 1})
 
-
-# ── Update product ─────────────────────────────────────────────────────────────
 
 @app.route('/api/suppliers/<supplier_id>/products/<int:idx>', methods=['PUT'])
 def update_product(supplier_id, idx):
-    body = request.json
-    data = load_data()
+    body     = request.json
+    data     = load_data()
     if supplier_id not in data:
         return jsonify({'success': False, 'error': 'Fournisseur introuvable'}), 404
     products = data[supplier_id]['products']
@@ -177,18 +250,15 @@ def update_product(supplier_id, idx):
         return jsonify({'success': False, 'error': 'Produit introuvable'}), 404
 
     p = products[idx]
-    if 'name' in body:  p['name']   = body['name'].strip()
-    if 'ref' in body:   p['ref']    = body['ref'].strip() or None
-    if 'unit' in body:  p['unit']   = body['unit'].strip() or None
+    if 'name'   in body: p['name']   = body['name'].strip()
+    if 'ref'    in body: p['ref']    = body['ref'].strip() or None
+    if 'unit'   in body: p['unit']   = body['unit'].strip() or None
     if 'family' in body: p['family'] = body['family'].strip() or None
-    if 'price' in body:
-        p['price'] = float(body['price']) if body['price'] not in (None, '') else None
+    if 'price'  in body: p['price']  = float(body['price']) if body['price'] not in (None, '') else None
 
     save_data(data)
     return jsonify({'success': True})
 
-
-# ── Delete product ─────────────────────────────────────────────────────────────
 
 @app.route('/api/suppliers/<supplier_id>/products/<int:idx>', methods=['DELETE'])
 def delete_product(supplier_id, idx):
@@ -208,22 +278,21 @@ def delete_product(supplier_id, idx):
 @app.route('/api/send-order', methods=['POST'])
 def send_order():
     order_data = request.json
-    config = load_config()
+    config     = load_config()
 
-    supplier_name  = order_data['supplier_name']
-    supplier_email = order_data['supplier_email']
-    items          = order_data['items']
+    supplier_name   = order_data['supplier_name']
+    supplier_email  = order_data['supplier_email']
+    items           = order_data['items']
     restaurant_name = order_data.get('restaurant_name') or config.get('restaurant_name', 'Le Restaurant')
-    date_str = datetime.now().strftime('%d/%m/%Y')
+    date_str        = datetime.now().strftime('%d/%m/%Y')
 
     lines = []
     for item in items:
         unit = item.get('unit') or ''
-        qty  = item['quantity']
         line = f"  - {item['name']}"
         if item.get('ref'):
             line += f" (réf. {item['ref']})"
-        line += f" : {qty}"
+        line += f" : {item['quantity']}"
         if unit:
             line += f" {unit}"
         lines.append(line)
@@ -265,7 +334,7 @@ def send_order():
 @app.route('/api/config', methods=['GET'])
 def get_config():
     config = load_config()
-    safe = {k: v for k, v in config.items() if k != 'email_password'}
+    safe   = {k: v for k, v in config.items() if k != 'email_password'}
     safe['email_password_set'] = bool(config.get('email_password'))
     return jsonify(safe)
 
