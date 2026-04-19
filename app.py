@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import os
 import re
+import requests as http_requests
 
 app = Flask(__name__)
 
@@ -305,21 +306,44 @@ def send_order():
     sender   = os.environ.get('EMAIL_SENDER')   or config.get('email_sender', '')
     password = os.environ.get('EMAIL_PASSWORD') or config.get('email_password', '')
 
-    if not sender or not password:
+    if not sender:
         return jsonify({'success': False, 'error': 'Email expéditeur non configuré. Allez dans Paramètres.'}), 400
     if not supplier_email:
         return jsonify({'success': False, 'error': 'Email du fournisseur non configuré.'}), 400
 
-    try:
-        msg = MIMEMultipart()
-        msg['From']    = sender
-        msg['To']      = supplier_email
-        msg['Subject'] = f"Commande {restaurant_name} – {date_str}"
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+    sendgrid_key = os.environ.get('SENDGRID_API_KEY')
 
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender, password)
-            server.send_message(msg)
+    try:
+        if sendgrid_key:
+            # ── SendGrid API (production sur Railway) ──
+            r = http_requests.post(
+                'https://api.sendgrid.com/v3/mail/send',
+                headers={
+                    'Authorization': f'Bearer {sendgrid_key}',
+                    'Content-Type': 'application/json'
+                },
+                json={
+                    'personalizations': [{'to': [{'email': supplier_email}]}],
+                    'from': {'email': sender, 'name': restaurant_name},
+                    'subject': f"Commande {restaurant_name} – {date_str}",
+                    'content': [{'type': 'text/plain', 'value': body}]
+                },
+                timeout=10
+            )
+            if r.status_code not in (200, 202):
+                return jsonify({'success': False, 'error': f'SendGrid: {r.text}'}), 500
+        else:
+            # ── SMTP Gmail (test en local) ──
+            if not password:
+                return jsonify({'success': False, 'error': 'Mot de passe email non configuré.'}), 400
+            msg = MIMEMultipart()
+            msg['From']    = sender
+            msg['To']      = supplier_email
+            msg['Subject'] = f"Commande {restaurant_name} – {date_str}"
+            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+                server.login(sender, password)
+                server.send_message(msg)
 
         return jsonify({'success': True, 'body': body})
     except Exception as e:
